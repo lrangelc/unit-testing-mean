@@ -17,7 +17,7 @@
 
         <mat-form-field> <input matInput placeholder="Give me the url" formControlName="firstAsset" required /> </mat-form-field>
 
-        <div formArrayName="assets" class="assets-array" *ngFor="let item of secondFormGroup.get('assets').controls; let i = index">
+        <div formArrayName="assets" class="assets-array" *ngFor="let item of secondFormGroup.get('assets'); let i = index">
           <mat-form-field [formGroupName]="i"> <input matInput formControlName="url" placeholder="Give me the url" /> </mat-form-field>
           <button mat-icon-button (click)="deleteAsset(i)">
             <mat-icon aria-label="Example icon-button with a heart icon">delete</mat-icon>

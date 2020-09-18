@@ -9,7 +9,9 @@ const PinsRouter = require("./routes/pins");
 const Pins = require("./models/Pins");
 const request = require("request");
 const axios = require("axios");
+const { callbackify } = require("util");
 const app = express();
+var requestPromise = require("request-promise-native");
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -96,44 +98,6 @@ describe("Testing Router", () => {
     });
   });
 
-  // describe("POST", () => {
-  //   it("200", (done) => {
-  //     const post = [
-  //       {
-  //         title: "Platzi",
-  //         author: "Platzi",
-  //         description: "Platzi rules",
-  //         percentage: 0,
-  //         tags: [],
-  //         assets: [],
-  //       },
-  //     ];
-
-  //     spyOn(Pins, "create").and.callFake((callBack) => {
-  //       callBack(false, {});
-  //     });
-
-  //     spyOn(requestPromise, "get").and.returnValue(
-  //       Promise.resolve(
-  //         '<title>Platzi</title><meta name="description" content="Platzi rules">'
-  //       )
-  //     );
-
-  //     const assets = [{ url: "http://platzi.com" }];
-
-  //     axios
-  //       .post("http://localhost:3000/api", {
-  //         title: "title",
-  //         author: "author",
-  //         description: "description",
-  //       })
-  //       .then((res) => {
-  //         expect(res.status).toBe(200);
-  //         done();
-  //       });
-  //   });
-  // });
-
   describe("POST", () => {
     it("200", (done) => {
       const post = [
@@ -177,6 +141,110 @@ describe("Testing Router", () => {
           expect(res.status).toBe(200);
           done();
         });
+    });
+
+    it("200 PDF", (done) => {
+      spyOn(Pins, "create").and.callFake((pins, callback) => {
+        callback(false, {});
+      });
+
+      const assets = [{ url: "http://platzi.pdf" }];
+
+      axios
+        .post("htpp://localhost:3000/api", {
+          title: "title",
+          author: "author",
+          description: "description",
+          assets,
+        })
+        .then((res) => {
+          expect(res.status).toBe(200);
+          done();
+        });
+    });
+
+    it("llamar a recurso /api/ flujo cuando la url es un .pdf o .png esperando 500", (done) => {
+      spyOn(Pins, "create").and.callFake((pins, callback) => {
+        callback(true, null);
+      });
+
+      request.post(
+        "http://localhost:3000/api/",
+        { json: { assets: [] } },
+        (error, response, body) => {
+          expect(response.statusCode).toBe(500);
+          done();
+        }
+      );
+    });
+
+    it("llamar a recurso /api/ flujo cuando la url es un .pdf o .png esperando 463", (done) => {
+      spyOn(Pins, "create").and.callFake((pins, callback) => {
+        callback(false, {});
+      });
+
+      request.post(
+        "http://localhost:3000/api/",
+        { json: { assets: [{ url: "http://prueba.com" }] } },
+        (error, response, body) => {
+          expect(response.statusCode).toBe(463);
+          done();
+        }
+      );
+    });
+  });
+
+  describe("Testing PUT", () => {
+    it("llamar a recurso /api/:id esperando 200", (done) => {
+      spyOn(Pins, "findByIdAndUpdate").and.callFake((id, body, callback) => {
+        callback(false, {});
+      });
+
+      request.put("http://localhost:3000/api/1005", (error, response, body) => {
+        expect(response.statusCode).toBe(200);
+        done();
+      });
+    });
+
+    it("llamar a recurso /api/:id esperando 500", (done) => {
+      spyOn(Pins, "findByIdAndUpdate").and.callFake((id, body, callback) => {
+        callback(true, null);
+      });
+
+      request.put("http://localhost:3000/api/1005", (error, response, body) => {
+        expect(response.statusCode).toBe(500);
+        done();
+      });
+    });
+  });
+
+  describe("Testing DELETE", () => {
+    it("llamar a recurso /api/:id esperando 200", (done) => {
+      spyOn(Pins, "findByIdAndRemove").and.callFake((id, body, callback) => {
+        callback(false, {});
+      });
+
+      request.delete(
+        "http://localhost:3000/api/1006",
+        (error, response, body) => {
+          expect(response.statusCode).toBe(200);
+          done();
+        }
+      );
+    });
+
+    it("llamar a recurso /api/:id esperando 500", (done) => {
+      spyOn(Pins, "findByIdAndRemove").and.callFake((id, body, callback) => {
+        callback(true, null);
+      });
+
+      request.delete(
+        "http://localhost:3000/api/1006",
+        (error, response, body) => {
+          expect(response.statusCode).toBe(500);
+          done();
+        }
+      );
     });
   });
 });
