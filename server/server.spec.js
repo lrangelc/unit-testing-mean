@@ -8,6 +8,7 @@ const http = require("http");
 const PinsRouter = require("./routes/pins");
 const Pins = require("./models/Pins");
 const request = require("request");
+const axios = require("axios");
 const app = express();
 
 app.use(logger("dev"));
@@ -92,6 +93,90 @@ describe("Testing Router", () => {
           done();
         }
       );
+    });
+  });
+
+  // describe("POST", () => {
+  //   it("200", (done) => {
+  //     const post = [
+  //       {
+  //         title: "Platzi",
+  //         author: "Platzi",
+  //         description: "Platzi rules",
+  //         percentage: 0,
+  //         tags: [],
+  //         assets: [],
+  //       },
+  //     ];
+
+  //     spyOn(Pins, "create").and.callFake((callBack) => {
+  //       callBack(false, {});
+  //     });
+
+  //     spyOn(requestPromise, "get").and.returnValue(
+  //       Promise.resolve(
+  //         '<title>Platzi</title><meta name="description" content="Platzi rules">'
+  //       )
+  //     );
+
+  //     const assets = [{ url: "http://platzi.com" }];
+
+  //     axios
+  //       .post("http://localhost:3000/api", {
+  //         title: "title",
+  //         author: "author",
+  //         description: "description",
+  //       })
+  //       .then((res) => {
+  //         expect(res.status).toBe(200);
+  //         done();
+  //       });
+  //   });
+  // });
+
+  describe("POST", () => {
+    it("200", (done) => {
+      const post = [
+        {
+          title: "Platzi",
+          author: "Platzi",
+          description: "Platzi rules",
+          percentage: 0,
+          tags: [],
+          assets: [
+            {
+              title: "Platzi",
+              description: "description",
+              readed: false,
+              url: "http://platzi.com",
+            },
+          ],
+        },
+      ];
+
+      spyOn(Pins, "create").and.callFake((pin, callBack) => {
+        callBack(false, {});
+      });
+
+      spyOn(requestPromise, "get").and.returnValue(
+        Promise.resolve(
+          '<title>Platzi</title><meta name="description" content="Platzi rules">'
+        )
+      );
+
+      const assets = [{ url: "http://platzi.com" }];
+
+      axios
+        .post("http://localhost:3000/api", {
+          title: "title",
+          author: "author",
+          description: "description",
+          assets,
+        })
+        .then((res) => {
+          expect(res.status).toBe(200);
+          done();
+        });
     });
   });
 });
