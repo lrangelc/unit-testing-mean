@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-pins',
   templateUrl: './pins.component.html',
   styleUrls: ['./pins.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class PinsComponent {
   public step = 0;
@@ -25,24 +25,26 @@ export class PinsComponent {
   ) {}
 
   ngOnInit() {
-    this.repository.getPins().subscribe(pins => {
-      this.pins = pins.map(pin => {
+    this.repository.getPins().subscribe((pins) => {
+      this.pins = pins.map((pin) => {
         const controls = {};
 
-        pin.assets.forEach(asset => {
+        pin.assets.forEach((asset) => {
           controls[asset._id] = this.formBuilder.control(asset.readed);
         });
 
         return {
           ...pin,
-          formGroup: this.formBuilder.group(controls)
+          formGroup: this.formBuilder.group(controls),
         };
       });
     });
 
-    this.pinsService.$actionObserver.pipe(filter(action => action === 'save')).subscribe(action => {
-      this.updateProgress(this.step);
-    });
+    this.pinsService.$actionObserver
+      .pipe(filter((action) => action === 'save'))
+      .subscribe((action) => {
+        this.updateProgress(this.step);
+      });
   }
 
   public setStep(index: number) {
@@ -68,11 +70,11 @@ export class PinsComponent {
         description: pin.description,
         percentage: pin.percentage,
         tags: pin.tags,
-        assets: pin.assets
+        assets: pin.assets,
       })
-      .subscribe(pin => {
+      .subscribe((pin) => {
         this.snackBar.open('Progress updated!', 'OK', {
-          duration: 2000
+          duration: 2000,
         });
       });
   }
@@ -86,17 +88,19 @@ export class PinsComponent {
       this.currentSubscription.unsubscribe();
     }
 
-    this.currentSubscription = this.pins[index].formGroup.valueChanges.subscribe(values => {
+    this.currentSubscription = this.pins[
+      index
+    ].formGroup.valueChanges.subscribe((values) => {
       const keys = Object.keys(values);
       const total = keys.length;
-      const active = keys.map(key => values[key]).filter(value => value);
+      const active = keys.map((key) => values[key]).filter((value) => value);
       const percentage = ((active.length * 100) / total).toFixed(2);
 
       this.pins[index].percentage = percentage;
-      this.pins[index].assets = this.pins[index].assets.map(asset => {
+      this.pins[index].assets = this.pins[index].assets.map((asset) => {
         return {
           ...asset,
-          readed: values[asset._id]
+          readed: values[asset._id],
         };
       });
     });
