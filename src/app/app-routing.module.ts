@@ -4,30 +4,30 @@ import { LayoutComponent } from './components/layout/layout.component';
 import { PinsComponent } from './components/pins/pins.component';
 import { FormComponent } from './components/form/form.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: 'app',
     component: LayoutComponent,
     children: [
       {
         path: 'pins',
-        component: PinsComponent
+        component: PinsComponent,
       },
       {
         path: 'add',
-        component: FormComponent
-      }
-    ]
+        component: FormComponent,
+      },
+    ],
   },
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'app/pins'
-  }
+    redirectTo: 'app/pins',
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}
