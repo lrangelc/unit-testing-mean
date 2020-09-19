@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { LayoutComponent } from './components/layout/layout.component';
 import { PinsComponent } from './components/pins/pins.component';
 import { FormComponent } from './components/form/form.component';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 export const routes: Routes = [
   {
@@ -27,7 +28,7 @@ export const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes), OverlayModule],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

@@ -31,6 +31,8 @@ import { ApiService } from './services/api.service';
 import { RepositoryService } from './services/repository.service';
 import { NavigationService } from './services/navigation.service';
 import { PinsService } from './components/pins/pins.service';
+import { RouterModule } from '@angular/router';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 @NgModule({
   declarations: [AppComponent, PinsComponent, LayoutComponent, MenuComponent, ActionsComponent, FormComponent],
@@ -56,7 +58,9 @@ import { PinsService } from './components/pins/pins.service';
     MatBottomSheetModule,
     MatStepperModule,
     HttpClientModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    RouterModule,
+    OverlayModule
   ],
   entryComponents: [ActionsComponent],
   providers: [ApiService, RepositoryService, NavigationService, PinsService],
