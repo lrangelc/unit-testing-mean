@@ -1,21 +1,21 @@
-var express = require('express');
-var cheerio = require('cheerio');
+var express = require("express");
+var cheerio = require("cheerio");
 var router = express.Router();
-var Pins = require('../models/Pins.js');
-var requestPromise = require('request-promise-native');
-var Url = require('url-parse');
+var Pins = require("../models/Pins.js");
+var requestPromise = require("request-promise-native");
+var Url = require("url-parse");
 
 /* GET ALL PINS */
-router.get('/', function(req, res, next) {
-  Pins.find(function(err, pins) {
+router.get("/", function (req, res, next) {
+  Pins.find(function (err, pins) {
     if (err) return next(err);
     res.json(pins);
   });
 });
 
 /* GET SINGLE PIN BY ID */
-router.get('/:id', function(req, res, next) {
-  Pins.findById(req.params.id, function(err, post) {
+router.get("/:id", function (req, res, next) {
+  Pins.findById(req.params.id, function (err, post) {
     if (err) return next(err);
     res.json(post);
   });
@@ -24,7 +24,7 @@ router.get('/:id', function(req, res, next) {
 /** Get URL information */
 function getMetadataFromAssets(assets) {
   return Promise.all(
-    assets.map(async asset => {
+    assets.map(async (asset) => {
       const regex = /^.+\.(([pP][dD][fF])|([jJ][pP][gG]))$/gm;
 
       if (regex.test(asset.url)) {
@@ -32,7 +32,9 @@ function getMetadataFromAssets(assets) {
         const title = url.hostname;
         const description = url.pathname;
 
-        return Promise.resolve(`<title>PDF from: ${title} </title><meta name="description" content="${description}">`);
+        return Promise.resolve(
+          `<title>PDF from: ${title} </title><meta name="description" content="${description}">`
+        );
       } else {
         return await requestPromise.get({ url: asset.url });
       }
@@ -41,52 +43,52 @@ function getMetadataFromAssets(assets) {
 }
 
 /* SAVE PIN */
-router.post('/', function(req, res, next) {
+router.post("/", function (req, res, next) {
   const _pins = {
     title: req.body.title,
     author: req.body.author,
     description: req.body.description,
     percentage: 0,
     tags: [],
-    assets: []
+    assets: [],
   };
 
   getMetadataFromAssets(req.body.assets)
-    .then(htmls => {
+    .then((htmls) => {
       htmls.forEach((html, index) => {
         const $ = cheerio.load(html);
-        const webpageTitle = $('title').text();
-        const metaDescription = $('meta[name=description]').attr('content');
+        const webpageTitle = $("title").text();
+        const metaDescription = $("meta[name=description]").attr("content");
 
         _pins.assets.push({
           title: webpageTitle,
           description: metaDescription,
           readed: false,
-          url: req.body.assets[index].url
+          url: req.body.assets[index].url,
         });
       });
 
-      Pins.create(_pins, function(err, post) {
+      Pins.create(_pins, function (err, post) {
         if (err) return next(err);
         res.json(post);
       });
     })
-    .catch(error => {
+    .catch((error) => {
       next(error);
     });
 });
 
 /* UPDATE PIN */
-router.put('/:id', function(req, res, next) {
-  Pins.findByIdAndUpdate(req.params.id, req.body, function(err, post) {
+router.put("/:id", function (req, res, next) {
+  Pins.findByIdAndUpdate(req.params.id, req.body, function (err, post) {
     if (err) return next(err);
     res.json(post);
   });
 });
 
 /* DELETE PIN */
-router.delete('/:id', function(req, res, next) {
-  Pins.findByIdAndRemove(req.params.id, req.body, function(err, post) {
+router.delete("/:id", function (req, res, next) {
+  Pins.findByIdAndRemove(req.params.id, req.body, function (err, post) {
     if (err) return next(err);
     res.json(post);
   });
@@ -94,5 +96,5 @@ router.delete('/:id', function(req, res, next) {
 
 module.exports = {
   router,
-  getMetadataFromAssets
+  getMetadataFromAssets,
 };
