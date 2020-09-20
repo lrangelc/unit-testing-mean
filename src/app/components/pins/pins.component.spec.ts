@@ -71,4 +71,27 @@ fdescribe('PinsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('When new page is open', () => {
+    const open = spyOn(window, 'open');
+
+    component.openUrl('https://platzi.com');
+
+    expect(open).toHaveBeenCalledWith('https://platzi.com', '_blank');
+  });
+
+  it('When update pogress', () => {
+    component.pins = PINS;
+    const pin = PINS[0];
+    const updatePin = spyOn(
+      (<any>component).repository,
+      'updatePin'
+    ).and.returnValue(of(true));
+    const open = spyOn((<any>component).snackBar, 'open');
+    const pinService = TestBed.get(PinsService);
+
+    pinService.resolve('save');
+
+    expect(open).toHaveBeenCalled();
+  });
 });
