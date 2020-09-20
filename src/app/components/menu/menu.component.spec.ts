@@ -42,4 +42,14 @@ fdescribe('MenuComponent', () => {
 
     component.clicked.next(val);
   });
+
+  it('Testing click', () => {
+    const button = fixture.debugElement.query(By.css('button'));
+    console.log(`component.counter: ${component.counter}`);
+
+    expect(component.counter).toBe(0);
+    button.triggerEventHandler('click', null);
+    expect(component.counter).toBe(1);
+    console.log(`component.counter: ${component.counter}`);
+  });
 });
